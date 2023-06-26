@@ -1,11 +1,10 @@
 import {
   Column,
   Entity,
+  JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
-  JoinColumn,
 } from 'typeorm';
-import { IsBoolean } from 'class-validator';
 import { TodolistEntity } from './todolist.entity';
 
 @Entity('tasks')
@@ -16,7 +15,7 @@ export class TasksEntity {
   @Column({ nullable: false })
   text: string;
 
-  @IsBoolean()
+  @Column({ default: false })
   completed: boolean;
 
   @ManyToOne(() => TodolistEntity, { eager: true, nullable: false })

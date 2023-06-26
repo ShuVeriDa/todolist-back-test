@@ -6,9 +6,12 @@ import {
 import { TodolistEntity } from './entity/todolist.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateTodolistDto } from './dto/create.dto';
+import { CreateTodolistDto } from './todolistDto/create.dto';
 import { UserEntity } from '../user/entity/user.entity';
-import { UpdateTodolistDto } from './dto/update.dto';
+import { UpdateTodolistDto } from './todolistDto/update.dto';
+import { CreateTaskDto } from './taskDto/create.dto';
+import { User } from '../user/decorators/user.decorator';
+import { TasksEntity } from './entity/tasks.entity';
 
 @Injectable()
 export class TodolistService {
@@ -16,10 +19,17 @@ export class TodolistService {
   private readonly userRepository: Repository<UserEntity>;
   @InjectRepository(TodolistEntity)
   private readonly todolistRepository: Repository<TodolistEntity>;
+  @InjectRepository(TasksEntity)
+  private readonly taskRepository: Repository<TasksEntity>;
+
+  //////////////
+  // Todolist//
+  ////////////
 
   async findAllTodolist(userId: string) {
     const todolists = await this.todolistRepository.find({
       where: { user: { id: userId } },
+      relations: ['tasks'],
     });
 
     return todolists.map((todolist) => this.returnTodolist(todolist));
@@ -28,8 +38,10 @@ export class TodolistService {
   async findOneTodolist(todolistId: string, userId: string) {
     const todolist = await this.todolistRepository.findOne({
       where: { id: todolistId },
-      relations: ['user'],
+      relations: ['user', 'tasks'],
     });
+
+    if (!todolist) throw new NotFoundException('Todolist not found');
 
     if (todolist.user.id !== userId)
       throw new ForbiddenException('You do not have access to this todolist');
@@ -64,8 +76,6 @@ export class TodolistService {
     userId: string,
   ) {
     const todolist = await this.findOneTodolist(todolistId, userId);
-
-    if (!todolist) throw new NotFoundException('Todolist not found');
 
     await this.todolistRepository.update(
       {
@@ -108,14 +118,33 @@ export class TodolistService {
   }
 
   returnTodolist(todolist: TodolistEntity) {
+    const tasks = todolist?.tasks?.map((task) => {
+      delete task.todolist;
+      return task;
+    });
     return {
       id: todolist.id,
       title: todolist.title,
-      tasks: todolist.tasks || [],
+      tasks: tasks || [],
       user: {
         id: todolist.user.id,
         nickname: todolist.user.nickname,
       },
     };
+  }
+
+  //////////////
+  // Tasks//
+  ////////////
+
+  async createTask(dto: CreateTaskDto, userId: string) {
+    const todolist = await this.findOneTodolist(dto.todolistId, userId);
+
+    const newTask = await this.taskRepository.save({
+      text: dto.text,
+      todolist: { id: todolist.id },
+    });
+
+    return await this.findOneTodolist(todolist.id, userId);
   }
 }

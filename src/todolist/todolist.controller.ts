@@ -12,14 +12,17 @@ import {
 } from '@nestjs/common';
 import { TodolistService } from './todolist.service';
 import { Auth } from '../auth/decorators/auth.decorator';
-import { CreateTodolistDto } from './dto/create.dto';
+import { CreateTodolistDto } from './todolistDto/create.dto';
 import { User } from '../user/decorators/user.decorator';
-import { UpdateTodolistDto } from './dto/update.dto';
+import { UpdateTodolistDto } from './todolistDto/update.dto';
+import { CreateTaskDto } from './taskDto/create.dto';
 
-@Controller('todolist')
+@Controller('todolists')
 export class TodolistController {
   constructor(private readonly todolistService: TodolistService) {}
-
+  //////////////
+  // Todolist//
+  ////////////
   @Get()
   @Auth()
   findAllTodolist(@User('id') userId: string) {
@@ -56,5 +59,17 @@ export class TodolistController {
   @Auth()
   deleteTodolist(@Param('id') todolistId: string, @User('id') userId: string) {
     return this.todolistService.deleteTodolist(todolistId, userId);
+  }
+
+  //////////////
+  // Tasks//
+  ////////////
+
+  @UsePipes(new ValidationPipe())
+  @Post('tasks')
+  @HttpCode(200)
+  @Auth()
+  createTask(@Body() dto: CreateTaskDto, @User('id') userId: string) {
+    return this.todolistService.createTask(dto, userId);
   }
 }
