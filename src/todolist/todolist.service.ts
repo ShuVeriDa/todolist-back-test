@@ -151,7 +151,17 @@ export class TodolistService {
     if (!isAuthor)
       throw new ForbiddenException('You do not have access to this task');
 
-    return task;
+    return {
+      ...task,
+      todolist: {
+        id: task.todolist.id,
+        title: task.todolist.title,
+        user: {
+          id: task.todolist.user.id,
+          nickname: task.todolist.user.nickname,
+        },
+      },
+    };
   }
 
   async createTask(dto: CreateTaskDto, userId: string) {

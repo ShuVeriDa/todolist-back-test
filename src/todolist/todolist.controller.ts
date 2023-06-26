@@ -68,6 +68,12 @@ export class TodolistController {
   // Tasks//
   ////////////
 
+  @Get('tasks/:id')
+  @Auth()
+  findOneTask(@Param('id') taskId: string, @User('id') userId: string) {
+    return this.todolistService.findOneTask(taskId, userId);
+  }
+
   @UsePipes(new ValidationPipe())
   @Post('tasks')
   @HttpCode(200)
