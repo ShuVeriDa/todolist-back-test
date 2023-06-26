@@ -2,13 +2,15 @@ import {
   BadRequestException,
   ForbiddenException,
   Injectable,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from '../user/entity/user.entity';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { AuthDto } from './dto/auth.dto';
-import { genSalt, hash } from 'bcryptjs';
+import { compare, genSalt, hash } from 'bcryptjs';
+import { RefreshTokenDto } from './dto/refreshToken.dto';
 
 @Injectable()
 export class AuthService {
@@ -17,6 +19,48 @@ export class AuthService {
     private readonly authRepository: Repository<UserEntity>,
     private readonly jwtService: JwtService,
   ) {}
+
+  async login(dto: AuthDto) {
+    const user = await this.validateUser(dto);
+
+    const tokens = await this.issueTokenPair(String(user.id));
+
+    return {
+      user: this.returnUserFields(user),
+      ...tokens,
+    };
+  }
+
+  async getNewTokens({ refreshToken }: RefreshTokenDto) {
+    if (!refreshToken) throw new UnauthorizedException('Please sign in');
+
+    const result = await this.jwtService.verifyAsync(refreshToken);
+
+    if (!result) throw new UnauthorizedException('Invalid token or expired');
+
+    const user = await this.authRepository.findOneBy({ id: result.id });
+
+    const tokens = await this.issueTokenPair(String(user.id));
+
+    return {
+      user: this.returnUserFields(user),
+      ...tokens,
+    };
+  }
+
+  async validateUser(dto: AuthDto) {
+    const user = await this.authRepository.findOne({
+      where: { email: dto.email },
+    });
+
+    if (!user) throw new UnauthorizedException('User not found');
+
+    const isValidPassword = await compare(dto.password, user.password);
+
+    if (!isValidPassword) throw new UnauthorizedException('Invalid password');
+
+    return user;
+  }
 
   async issueTokenPair(userId: string) {
     const data = { id: userId };
