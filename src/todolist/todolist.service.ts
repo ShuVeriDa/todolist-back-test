@@ -12,6 +12,7 @@ import { UpdateTodolistDto } from './todolistDto/update.dto';
 import { CreateTaskDto } from './taskDto/create.dto';
 import { User } from '../user/decorators/user.decorator';
 import { TasksEntity } from './entity/tasks.entity';
+import { UpdateTaskDto } from './taskDto/update.dto';
 
 @Injectable()
 export class TodolistService {
@@ -137,13 +138,45 @@ export class TodolistService {
   // Tasks//
   ////////////
 
+  async findOneTask(taskId: string, userId: string) {
+    const task = await this.taskRepository.findOne({
+      where: { id: taskId },
+      relations: ['todolist', 'todolist.user'],
+    });
+
+    if (!task) throw new NotFoundException('Task not found');
+
+    const isAuthor = task.todolist.user.id === userId;
+
+    if (!isAuthor)
+      throw new ForbiddenException('You do not have access to this task');
+
+    return task;
+  }
+
   async createTask(dto: CreateTaskDto, userId: string) {
     const todolist = await this.findOneTodolist(dto.todolistId, userId);
 
-    const newTask = await this.taskRepository.save({
+    await this.taskRepository.save({
       text: dto.text,
       todolist: { id: todolist.id },
     });
+
+    return await this.findOneTodolist(todolist.id, userId);
+  }
+
+  async updateTask(dto: UpdateTaskDto, taskId: string, userId: string) {
+    const todolist = await this.findOneTodolist(dto.todolistId, userId);
+    const task = await this.findOneTask(taskId, userId);
+
+    await this.taskRepository.update(
+      { id: task.id },
+      {
+        text: dto.text,
+        completed: dto.completed,
+        todolist: { id: todolist.id },
+      },
+    );
 
     return await this.findOneTodolist(todolist.id, userId);
   }

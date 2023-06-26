@@ -5,6 +5,7 @@ import {
   Get,
   HttpCode,
   Param,
+  Patch,
   Post,
   Put,
   UsePipes,
@@ -16,10 +17,12 @@ import { CreateTodolistDto } from './todolistDto/create.dto';
 import { User } from '../user/decorators/user.decorator';
 import { UpdateTodolistDto } from './todolistDto/update.dto';
 import { CreateTaskDto } from './taskDto/create.dto';
+import { UpdateTaskDto } from './taskDto/update.dto';
 
 @Controller('todolists')
 export class TodolistController {
   constructor(private readonly todolistService: TodolistService) {}
+
   //////////////
   // Todolist//
   ////////////
@@ -47,7 +50,7 @@ export class TodolistController {
   @Put(':id')
   @HttpCode(200)
   @Auth()
-  update(
+  updateTodolist(
     @Param('id') todolistId: string,
     @Body() dto: UpdateTodolistDto,
     @User('id') userId: string,
@@ -71,5 +74,17 @@ export class TodolistController {
   @Auth()
   createTask(@Body() dto: CreateTaskDto, @User('id') userId: string) {
     return this.todolistService.createTask(dto, userId);
+  }
+
+  @UsePipes(new ValidationPipe())
+  @Patch('tasks/:id')
+  @HttpCode(200)
+  @Auth()
+  updateTask(
+    @Param('id') taskId: string,
+    @Body() dto: UpdateTaskDto,
+    @User('id') userId: string,
+  ) {
+    return this.todolistService.updateTask(dto, taskId, userId);
   }
 }

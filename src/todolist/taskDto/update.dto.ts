@@ -5,6 +5,7 @@ export class UpdateTaskDto {
   @IsString()
   text: string;
 
+  @IsOptional()
   @IsBoolean()
   completed: boolean;
 
