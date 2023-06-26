@@ -1,10 +1,13 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { TodolistEntity } from './entity/todolist.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateTodolistDto } from './dto/create.dto';
 import { UserEntity } from '../user/entity/user.entity';
-import { UpdateTodolistDto } from './dto/update.dto';
 
 @Injectable()
 export class TodolistService {
@@ -13,12 +16,24 @@ export class TodolistService {
   @InjectRepository(TodolistEntity)
   private readonly todolistRepository: Repository<TodolistEntity>;
 
-  async findAll(userId: string) {
+  async findAllTodolist(userId: string) {
     const todolists = await this.todolistRepository.find({
       where: { user: { id: userId } },
     });
 
     return todolists.map((todolist) => this.returnTodolist(todolist));
+  }
+
+  async findOneTodolist(todolistId: string, userId: string) {
+    const todolist = await this.todolistRepository.findOne({
+      where: { id: todolistId },
+      relations: ['user'],
+    });
+
+    if (todolist.user.id !== userId)
+      throw new ForbiddenException('You do not have access to this todolist');
+
+    return this.returnTodolist(todolist);
   }
 
   async createTodolist(dto: CreateTodolistDto, userId: string) {

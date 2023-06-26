@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   HttpCode,
+  Param,
   Post,
   Put,
   UsePipes,
@@ -20,8 +21,14 @@ export class TodolistController {
 
   @Get()
   @Auth()
-  findAll(@User('id') userId: string) {
-    return this.todolistService.findAll(userId);
+  findAllTodolist(@User('id') userId: string) {
+    return this.todolistService.findAllTodolist(userId);
+  }
+
+  @Get(':id')
+  @Auth()
+  findOneTodolist(@Param('id') todolistId: string, @User('id') userId: string) {
+    return this.todolistService.findOneTodolist(todolistId, userId);
   }
 
   @UsePipes(new ValidationPipe())
