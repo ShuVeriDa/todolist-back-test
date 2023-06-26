@@ -7,10 +7,10 @@ import { TodolistEntity } from './entity/todolist.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateTodolistDto } from './todolistDto/create.dto';
-import { UserEntity } from '../user/entity/user.entity';
+import { UserEntity } from '../auth/entity/user.entity';
 import { UpdateTodolistDto } from './todolistDto/update.dto';
 import { CreateTaskDto } from './taskDto/create.dto';
-import { User } from '../user/decorators/user.decorator';
+import { User } from '../auth/decorators/user.decorator';
 import { TasksEntity } from './entity/tasks.entity';
 import { UpdateTaskDto } from './taskDto/update.dto';
 import { PaginationDto } from './todolistDto/pagination.dto';
@@ -77,7 +77,7 @@ export class TodolistService {
       };
     }
 
-    if (!dto) return this.returnTodolist(todolist);
+    return this.returnTodolist(todolist);
   }
 
   async createTodolist(dto: CreateTodolistDto, userId: string) {

@@ -4,7 +4,7 @@ import { TodolistService } from './todolist.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TodolistEntity } from './entity/todolist.entity';
 import { TasksEntity } from './entity/tasks.entity';
-import { UserEntity } from '../user/entity/user.entity';
+import { UserEntity } from '../auth/entity/user.entity';
 
 @Module({
   imports: [

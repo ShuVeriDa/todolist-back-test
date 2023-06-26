@@ -2,21 +2,20 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AuthController } from './auth/auth.controller';
-import { AuthService } from './auth/auth.service';
+
 import { AuthModule } from './auth/auth.module';
-import { UserModule } from './user/user.module';
-import { UserEntity } from './user/entity/user.entity';
+import { UserEntity } from './auth/entity/user.entity';
 import { TodolistModule } from './todolist/todolist.module';
 import { TodolistEntity } from './todolist/entity/todolist.entity';
 import { TasksEntity } from './todolist/entity/tasks.entity';
+import * as process from 'process';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'localhost',
-      port: 5432,
+      host: process.env.DB_HOST,
+      port: +process.env.DB_PORT,
       username: 'postgres',
       password: '5940530bbbb',
       database: 'todolist',
@@ -24,7 +23,6 @@ import { TasksEntity } from './todolist/entity/tasks.entity';
       synchronize: true,
     }),
     AuthModule,
-    UserModule,
     TodolistModule,
   ],
   controllers: [AppController],

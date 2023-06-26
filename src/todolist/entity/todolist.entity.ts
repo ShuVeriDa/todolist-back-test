@@ -7,7 +7,7 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { TasksEntity } from './tasks.entity';
-import { UserEntity } from '../../user/entity/user.entity';
+import { UserEntity } from '../../auth/entity/user.entity';
 
 @Entity('todolists')
 export class TodolistEntity {
