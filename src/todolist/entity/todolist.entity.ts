@@ -4,6 +4,7 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
+  JoinColumn,
 } from 'typeorm';
 import { TasksEntity } from './tasks.entity';
 import { UserEntity } from '../../user/entity/user.entity';
@@ -16,10 +17,11 @@ export class TodolistEntity {
   @Column({ nullable: false })
   title: string;
 
-  @OneToMany(() => TasksEntity, (task) => task, {
+  @OneToMany(() => TasksEntity, (task) => task.todolist, {
     eager: false,
     nullable: true,
   })
+  @JoinColumn({ name: 'taskId' })
   tasks: TasksEntity[];
 
   @ManyToOne(() => UserEntity, { eager: true, nullable: false })

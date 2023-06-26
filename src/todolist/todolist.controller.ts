@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   Param,
@@ -49,5 +50,11 @@ export class TodolistController {
     @User('id') userId: string,
   ) {
     return this.todolistService.updateTodolist(dto, todolistId, userId);
+  }
+
+  @Delete(':id')
+  @Auth()
+  deleteTodolist(@Param('id') todolistId: string, @User('id') userId: string) {
+    return this.todolistService.deleteTodolist(todolistId, userId);
   }
 }

@@ -1,6 +1,11 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { IsBoolean, IsString, MinLength } from 'class-validator';
-import { UserEntity } from '../../user/entity/user.entity';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  JoinColumn,
+} from 'typeorm';
+import { IsBoolean } from 'class-validator';
 import { TodolistEntity } from './todolist.entity';
 
 @Entity('tasks')
@@ -15,5 +20,6 @@ export class TasksEntity {
   completed: boolean;
 
   @ManyToOne(() => TodolistEntity, { eager: true, nullable: false })
+  @JoinColumn({ name: 'todolistId' })
   todolist: TodolistEntity;
 }

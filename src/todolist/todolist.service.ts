@@ -79,6 +79,34 @@ export class TodolistService {
     return this.findOneTodolist(fetchTodolist.id, userId);
   }
 
+  async deleteTodolist(todolistId: string, userId: string) {
+    await this.todolistRepository.manager.transaction(async (manager) => {
+      const todolist = await manager.findOne(TodolistEntity, {
+        where: { id: todolistId },
+        relations: ['tasks', 'user'],
+      });
+
+      if (!todolist) throw new NotFoundException('Todolist not found');
+
+      const isAuthor = todolist.user.id === userId;
+
+      if (!isAuthor)
+        throw new ForbiddenException("You don't have access to this todolist");
+
+      const tasks = todolist.tasks;
+
+      if (!tasks) {
+        await manager.remove(todolist);
+      }
+
+      for (const task of tasks) {
+        await manager.remove(task);
+      }
+
+      await manager.remove(todolist);
+    });
+  }
+
   returnTodolist(todolist: TodolistEntity) {
     return {
       id: todolist.id,
