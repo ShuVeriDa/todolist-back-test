@@ -8,9 +8,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from '../user/entity/user.entity';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
-import { AuthDto } from './dto/auth.dto';
+import { RegisterDto } from './dto/register.dto';
 import { compare, genSalt, hash } from 'bcryptjs';
 import { RefreshTokenDto } from './dto/refreshToken.dto';
+import { LoginDto } from './dto/login.dto';
 
 @Injectable()
 export class AuthService {
@@ -20,7 +21,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async login(dto: AuthDto) {
+  async login(dto: LoginDto) {
     const user = await this.validateUser(dto);
 
     const tokens = await this.issueTokenPair(String(user.id));
@@ -48,7 +49,7 @@ export class AuthService {
     };
   }
 
-  async validateUser(dto: AuthDto) {
+  async validateUser(dto: LoginDto) {
     const user = await this.authRepository.findOne({
       where: { email: dto.email },
     });
@@ -76,7 +77,7 @@ export class AuthService {
     return { refreshToken, accessToken };
   }
 
-  async register(dto: AuthDto) {
+  async register(dto: RegisterDto) {
     const isExisted = await this.authRepository.findOne({
       where: { email: dto.email },
     });
@@ -90,6 +91,8 @@ export class AuthService {
 
     const user = await this.authRepository.save({
       email: dto.email,
+      nickname: dto.nickname,
+      todolists: [],
       password: await hash(dto.password, salt),
     });
 
@@ -108,6 +111,7 @@ export class AuthService {
   returnUserFields(user: UserEntity) {
     return {
       id: user.id,
+      nickname: user.nickname,
       email: user.email,
     };
   }

@@ -2,11 +2,13 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { TodolistEntity } from '../../todolist/entity/todolist.entity';
 
-@Entity('user')
+@Entity('users')
 export class UserEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -17,7 +19,16 @@ export class UserEntity {
   email: string;
 
   @Column()
+  nickname: string;
+
+  @Column()
   password: string;
+
+  @OneToMany(() => TodolistEntity, (todolist) => todolist.user, {
+    eager: false,
+    nullable: true,
+  })
+  todolists: TodolistEntity[];
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;

@@ -7,6 +7,9 @@ import { AuthService } from './auth/auth.service';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { UserEntity } from './user/entity/user.entity';
+import { TodolistModule } from './todolist/todolist.module';
+import { TodolistEntity } from './todolist/entity/todolist.entity';
+import { TasksEntity } from './todolist/entity/tasks.entity';
 
 @Module({
   imports: [
@@ -17,11 +20,12 @@ import { UserEntity } from './user/entity/user.entity';
       username: 'postgres',
       password: '5940530bbbb',
       database: 'todolist',
-      entities: [UserEntity],
+      entities: [UserEntity, TodolistEntity, TasksEntity],
       synchronize: true,
     }),
     AuthModule,
     UserModule,
+    TodolistModule,
   ],
   controllers: [AppController],
   providers: [AppService],
