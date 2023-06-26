@@ -13,6 +13,7 @@ import { CreateTaskDto } from './taskDto/create.dto';
 import { User } from '../user/decorators/user.decorator';
 import { TasksEntity } from './entity/tasks.entity';
 import { UpdateTaskDto } from './taskDto/update.dto';
+import { PaginationDto } from './todolistDto/pagination.dto';
 
 @Injectable()
 export class TodolistService {
@@ -36,7 +37,11 @@ export class TodolistService {
     return todolists.map((todolist) => this.returnTodolist(todolist));
   }
 
-  async findOneTodolist(todolistId: string, userId: string) {
+  async findOneTodolist(
+    todolistId: string,
+    userId: string,
+    dto?: PaginationDto,
+  ) {
     const todolist = await this.todolistRepository.findOne({
       where: { id: todolistId },
       relations: ['user', 'tasks'],
@@ -47,7 +52,32 @@ export class TodolistService {
     if (todolist.user.id !== userId)
       throw new ForbiddenException('You do not have access to this todolist');
 
-    return this.returnTodolist(todolist);
+    if (dto) {
+      const limit = 5;
+      const skip = (dto.page - 1) * limit;
+
+      const [tasks, total] = await this.taskRepository.findAndCount({
+        where: { todolist: { id: todolist.id } },
+        skip: skip,
+        take: limit,
+      });
+
+      const createdTasks = tasks.map((task) => {
+        delete task.todolist;
+        return task;
+      });
+
+      return {
+        ...todolist,
+        user: {
+          id: todolist.user.id,
+          nickname: todolist.user.nickname,
+        },
+        tasks: createdTasks,
+      };
+    }
+
+    if (!dto) return this.returnTodolist(todolist);
   }
 
   async createTodolist(dto: CreateTodolistDto, userId: string) {
@@ -85,9 +115,7 @@ export class TodolistService {
       { title: dto.title },
     );
 
-    const fetchTodolist = await this.findOneTodolist(todolistId, userId);
-
-    return this.findOneTodolist(fetchTodolist.id, userId);
+    return this.findOneTodolist(todolist.id, userId);
   }
 
   async deleteTodolist(todolistId: string, userId: string) {

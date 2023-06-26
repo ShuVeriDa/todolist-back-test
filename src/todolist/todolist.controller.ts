@@ -8,6 +8,7 @@ import {
   Patch,
   Post,
   Put,
+  Query,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -18,6 +19,7 @@ import { User } from '../user/decorators/user.decorator';
 import { UpdateTodolistDto } from './todolistDto/update.dto';
 import { CreateTaskDto } from './taskDto/create.dto';
 import { UpdateTaskDto } from './taskDto/update.dto';
+import { PaginationDto } from './todolistDto/pagination.dto';
 
 @Controller('todolists')
 export class TodolistController {
@@ -34,8 +36,12 @@ export class TodolistController {
 
   @Get(':id')
   @Auth()
-  findOneTodolist(@Param('id') todolistId: string, @User('id') userId: string) {
-    return this.todolistService.findOneTodolist(todolistId, userId);
+  findOneTodolist(
+    @Param('id') todolistId: string,
+    @User('id') userId: string,
+    @Query() dto: PaginationDto,
+  ) {
+    return this.todolistService.findOneTodolist(todolistId, userId, dto);
   }
 
   @UsePipes(new ValidationPipe())
