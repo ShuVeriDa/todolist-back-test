@@ -8,6 +8,7 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateTodolistDto } from './dto/create.dto';
 import { UserEntity } from '../user/entity/user.entity';
+import { UpdateTodolistDto } from './dto/update.dto';
 
 @Injectable()
 export class TodolistService {
@@ -55,6 +56,27 @@ export class TodolistService {
     });
 
     return this.returnTodolist(todolist);
+  }
+
+  async updateTodolist(
+    dto: UpdateTodolistDto,
+    todolistId: string,
+    userId: string,
+  ) {
+    const todolist = await this.findOneTodolist(todolistId, userId);
+
+    if (!todolist) throw new NotFoundException('Todolist not found');
+
+    await this.todolistRepository.update(
+      {
+        id: todolist.id,
+      },
+      { title: dto.title },
+    );
+
+    const fetchTodolist = await this.findOneTodolist(todolistId, userId);
+
+    return this.findOneTodolist(fetchTodolist.id, userId);
   }
 
   returnTodolist(todolist: TodolistEntity) {

@@ -38,4 +38,16 @@ export class TodolistController {
   createTodolist(@Body() dto: CreateTodolistDto, @User('id') userId: string) {
     return this.todolistService.createTodolist(dto, userId);
   }
+
+  @UsePipes(new ValidationPipe())
+  @Put(':id')
+  @HttpCode(200)
+  @Auth()
+  update(
+    @Param('id') todolistId: string,
+    @Body() dto: UpdateTodolistDto,
+    @User('id') userId: string,
+  ) {
+    return this.todolistService.updateTodolist(dto, todolistId, userId);
+  }
 }
