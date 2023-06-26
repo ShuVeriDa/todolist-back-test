@@ -47,7 +47,7 @@ export class TodolistController {
   }
 
   @UsePipes(new ValidationPipe())
-  @Put(':id')
+  @Patch(':id')
   @HttpCode(200)
   @Auth()
   updateTodolist(
@@ -92,5 +92,11 @@ export class TodolistController {
     @User('id') userId: string,
   ) {
     return this.todolistService.updateTask(dto, taskId, userId);
+  }
+
+  @Delete('tasks/:id')
+  @Auth()
+  deleteTask(@Param('id') taskId: string, @User('id') userId: string) {
+    return this.todolistService.deleteTask(taskId, userId);
   }
 }

@@ -190,4 +190,10 @@ export class TodolistService {
 
     return await this.findOneTodolist(todolist.id, userId);
   }
+
+  async deleteTask(taskId: string, userId: string) {
+    const task = await this.findOneTask(taskId, userId);
+
+    await this.taskRepository.delete({ id: task.id });
+  }
 }
