@@ -39,7 +39,6 @@ export class TodolistService {
   }
 
   async findOneTodolist(todolistId: string, userId: string, page?: number) {
-    console.log(page);
     const todolist = await this.todolistRepository.findOne({
       where: { id: todolistId },
       relations: ['user', 'tasks'],
