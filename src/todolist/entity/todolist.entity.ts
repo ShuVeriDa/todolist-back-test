@@ -5,6 +5,8 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
   JoinColumn,
+  UpdateDateColumn,
+  CreateDateColumn,
 } from 'typeorm';
 import { TasksEntity } from './tasks.entity';
 import { UserEntity } from '../../auth/entity/user.entity';
@@ -26,4 +28,10 @@ export class TodolistEntity {
 
   @ManyToOne(() => UserEntity, { eager: true, nullable: false })
   user: UserEntity;
+
+  @CreateDateColumn({ type: 'timestamp' })
+  createdAt: Date;
+
+  @UpdateDateColumn({ type: 'timestamp' })
+  updatedAt: Date;
 }

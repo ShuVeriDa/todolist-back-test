@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -37,11 +38,8 @@ export class TodolistService {
     return todolists.map((todolist) => this.returnTodolist(todolist));
   }
 
-  async findOneTodolist(
-    todolistId: string,
-    userId: string,
-    dto?: PaginationDto,
-  ) {
+  async findOneTodolist(todolistId: string, userId: string, page?: number) {
+    console.log(page);
     const todolist = await this.todolistRepository.findOne({
       where: { id: todolistId },
       relations: ['user', 'tasks'],
@@ -52,14 +50,15 @@ export class TodolistService {
     if (todolist.user.id !== userId)
       throw new ForbiddenException('You do not have access to this todolist');
 
-    if (dto) {
+    if (page) {
       const limit = 5;
-      const skip = (dto.page - 1) * limit;
+      const skip = (page - 1) * limit;
 
       const [tasks, total] = await this.taskRepository.findAndCount({
         where: { todolist: { id: todolist.id } },
         skip: skip,
         take: limit,
+        order: { createdAt: 'desc' },
       });
 
       const createdTasks = tasks.map((task) => {

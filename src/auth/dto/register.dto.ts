@@ -1,4 +1,4 @@
-import { IsEmail, IsString, MinLength } from 'class-validator';
+import { Equals, IsEmail, IsString, MinLength } from 'class-validator';
 
 export class RegisterDto {
   @IsEmail()
@@ -15,4 +15,10 @@ export class RegisterDto {
     message: 'Password cannot be less than 6 characters',
   })
   password: string;
+
+  @IsString()
+  @MinLength(6, {
+    message: 'Password cannot be less than 6 characters',
+  })
+  confirmPassword: string;
 }

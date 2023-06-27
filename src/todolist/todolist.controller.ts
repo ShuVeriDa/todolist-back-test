@@ -7,7 +7,6 @@ import {
   Param,
   Patch,
   Post,
-  Put,
   Query,
   UsePipes,
   ValidationPipe,
@@ -19,7 +18,6 @@ import { User } from '../auth/decorators/user.decorator';
 import { UpdateTodolistDto } from './todolistDto/update.dto';
 import { CreateTaskDto } from './taskDto/create.dto';
 import { UpdateTaskDto } from './taskDto/update.dto';
-import { PaginationDto } from './todolistDto/pagination.dto';
 
 @Controller('todolists')
 export class TodolistController {
@@ -37,11 +35,11 @@ export class TodolistController {
   @Get(':id')
   @Auth()
   findOneTodolist(
+    @Query('page') page: number,
     @Param('id') todolistId: string,
     @User('id') userId: string,
-    @Query() dto: PaginationDto,
   ) {
-    return this.todolistService.findOneTodolist(todolistId, userId, dto);
+    return this.todolistService.findOneTodolist(todolistId, userId, page);
   }
 
   @UsePipes(new ValidationPipe())
