@@ -1,30 +1,35 @@
 import {
   Column,
+  CreateDateColumn,
   Entity,
   ManyToOne,
-  OneToMany,
   PrimaryGeneratedColumn,
-  JoinColumn,
   UpdateDateColumn,
-  CreateDateColumn,
 } from 'typeorm';
-import { TasksEntity } from './tasks.entity';
+import { IsDate, IsDateString } from 'class-validator';
 import { UserEntity } from '../../auth/entity/user.entity';
 
-@Entity('todolists')
-export class TodolistEntity {
+@Entity('appointments')
+export class AppointmentsEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ nullable: false })
-  title: string;
+  @Column()
+  name: string;
 
-  @OneToMany(() => TasksEntity, (task) => task.todolist, {
-    eager: false,
-    nullable: true,
-  })
-  @JoinColumn({ name: 'taskId' })
-  tasks: TasksEntity[];
+  @Column()
+  phone: number;
+
+  @ManyToOne(() => Card)
+  card: {
+    title: string;
+    price: number;
+  };
+
+  @Column()
+  @IsDate()
+  @IsDateString()
+  dateTime: Date;
 
   @ManyToOne(() => UserEntity, { eager: true, nullable: false })
   user: UserEntity;
