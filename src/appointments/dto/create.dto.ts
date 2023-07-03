@@ -1,9 +1,18 @@
-import { IsString } from 'class-validator';
+import { IsArray, IsNumber, IsObject, IsString } from 'class-validator';
 
-export class CreateTaskDto {
+export class CreateDto {
   @IsString()
-  text: string;
+  name: string;
+
+  @IsNumber()
+  phone: number;
+
+  @IsArray()
+  cards: string[];
+
+  @IsNumber()
+  price: number;
 
   @IsString()
-  todolistId: string;
+  dateTime: string;
 }

@@ -6,33 +6,21 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { IsDate, IsDateString } from 'class-validator';
-import { UserEntity } from '../../auth/entity/user.entity';
+import { AppointmentsEntity } from './appointments.entity';
 
-@Entity('appointments')
-export class AppointmentsEntity {
+@Entity('cards')
+export class CardEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column()
-  name: string;
+  title: string;
 
   @Column()
-  phone: number;
-
-  @ManyToOne(() => Card)
-  card: {
-    title: string;
-    price: number;
-  };
-
-  @Column()
-  @IsDate()
-  @IsDateString()
-  dateTime: Date;
-
-  @ManyToOne(() => UserEntity, { eager: true, nullable: false })
-  user: UserEntity;
+  price: number;
+  //
+  // @ManyToOne(() => AppointmentsEntity, { eager: true, nullable: false })
+  // appointment: AppointmentsEntity;
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;
