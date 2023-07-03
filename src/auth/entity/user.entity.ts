@@ -6,7 +6,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { TodolistEntity } from '../../todolist/entity/todolist.entity';
+import { AppointmentsEntity } from '../../appointments/entity/appointments.entity';
 
 @Entity('users')
 export class UserEntity {
@@ -16,19 +16,19 @@ export class UserEntity {
   @Column({
     unique: true,
   })
-  email: string;
-
-  @Column()
-  nickname: string;
+  login: string;
 
   @Column()
   password: string;
 
-  @OneToMany(() => TodolistEntity, (todolist) => todolist.user, {
-    eager: false,
-    nullable: true,
-  })
-  todolists: TodolistEntity[];
+  @Column({ default: false })
+  isAdmin: boolean;
+
+  // @OneToMany(() => AppointmentsEntity, (appoint) => appoint.user, {
+  //   eager: false,
+  //   nullable: true,
+  // })
+  // appointments: AppointmentsEntity[];
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;

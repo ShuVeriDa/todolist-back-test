@@ -51,7 +51,7 @@ export class AuthService {
 
   async validateUser(dto: LoginDto) {
     const user = await this.authRepository.findOne({
-      where: { email: dto.email },
+      where: { login: dto.login },
     });
 
     if (!user) throw new UnauthorizedException('User not found');
@@ -78,24 +78,20 @@ export class AuthService {
   }
 
   async register(dto: RegisterDto) {
-    if (dto.password !== dto.confirmPassword) {
-      throw new BadRequestException('Passwords do not match');
-    }
     const isExisted = await this.authRepository.findOne({
-      where: { email: dto.email },
+      where: { login: dto.login },
     });
 
     if (isExisted)
       throw new BadRequestException(
-        `User with this email is already in the system`,
+        `User with this login is already in the system`,
       );
 
     const salt = await genSalt(10);
 
     const user = await this.authRepository.save({
-      email: dto.email,
-      nickname: dto.nickname,
-      todolists: [],
+      login: dto.login,
+      isAdmin: dto.isAdmin,
       password: await hash(dto.password, salt),
     });
 
@@ -114,8 +110,8 @@ export class AuthService {
   returnUserFields(user: UserEntity) {
     return {
       id: user.id,
-      nickname: user.nickname,
-      email: user.email,
+      login: user.login,
+      isAdmin: user.isAdmin,
     };
   }
 }

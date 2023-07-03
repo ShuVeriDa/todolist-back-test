@@ -1,8 +1,11 @@
-import { IsEmail, IsString, MinLength } from 'class-validator';
+import { IsString, MinLength } from 'class-validator';
 
 export class LoginDto {
-  @IsEmail()
-  email: string;
+  @IsString()
+  @MinLength(4, {
+    message: 'Login cannot be less than 4 characters',
+  })
+  login: string;
 
   @IsString()
   @MinLength(6, {
