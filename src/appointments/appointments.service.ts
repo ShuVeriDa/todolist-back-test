@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { AppointmentsEntity } from './entity/appointments.entity';
 import { CreateDto } from './dto/create.dto';
 import { CardEntity } from './entity/card.entity';
+import * as moment from 'moment';
 
 @Injectable()
 export class AppointmentsService {
@@ -25,11 +26,13 @@ export class AppointmentsService {
   }
 
   async create(dto: CreateDto) {
+    const dateTime = moment.utc(dto.dateTime).toISOString();
+
     const appointment = await this.appointmentRepository.save({
       name: dto.name,
       cards: dto.cards,
       price: dto.price,
-      dateTime: dto.dateTime,
+      dateTime: dateTime,
       phone: dto.phone,
     });
 
@@ -37,6 +40,9 @@ export class AppointmentsService {
       where: { id: appointment.id },
     });
 
-    return fetch;
+    return {
+      ...fetch,
+      phone: Number(fetch.phone),
+    };
   }
 }

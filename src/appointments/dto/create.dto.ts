@@ -1,4 +1,11 @@
-import { IsArray, IsNumber, IsObject, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsDate,
+  IsDateString,
+  IsNumber,
+  IsObject,
+  IsString,
+} from 'class-validator';
 
 export class CreateDto {
   @IsString()
@@ -13,6 +20,6 @@ export class CreateDto {
   @IsNumber()
   price: number;
 
-  @IsString()
-  dateTime: string;
+  @IsDateString()
+  dateTime: Date;
 }

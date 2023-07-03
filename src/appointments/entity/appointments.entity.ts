@@ -14,7 +14,7 @@ export class AppointmentsEntity {
   @Column()
   name: string;
 
-  @Column()
+  @Column('bigint')
   phone: number;
 
   @Column('text', { array: true, default: null })
@@ -23,13 +23,11 @@ export class AppointmentsEntity {
   @Column()
   price: number;
 
-  // @Column()
-  // @IsDate()
-  // @IsDateString()
-  // dateTime: Date;
+  @Column({ nullable: false })
+  dateTime: Date;
 
-  @Column()
-  dateTime: string;
+  // @Column()
+  // dateTime: string;
   //
   // @ManyToOne(() => UserEntity, { eager: true, nullable: false })
   // user: UserEntity;
