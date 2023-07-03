@@ -10,7 +10,6 @@ import * as process from 'process';
 import { AppointmentsEntity } from './appointments/entity/appointments.entity';
 import { CardEntity } from './appointments/entity/card.entity';
 
-
 @Module({
   imports: [
     TypeOrmModule.forRoot({
