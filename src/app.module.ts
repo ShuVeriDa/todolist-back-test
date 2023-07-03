@@ -5,10 +5,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AuthModule } from './auth/auth.module';
 import { UserEntity } from './auth/entity/user.entity';
-import { AppointmentsModule } from './appointments/appointments.module';
+import { TodolistModule } from './todolist/todolist.module';
+import { TodolistEntity } from './todolist/entity/todolist.entity';
+import { TasksEntity } from './todolist/entity/tasks.entity';
 import * as process from 'process';
-import { AppointmentsEntity } from './appointments/entity/appointments.entity';
-import { CardEntity } from './appointments/entity/card.entity';
 
 @Module({
   imports: [
@@ -18,12 +18,12 @@ import { CardEntity } from './appointments/entity/card.entity';
       port: +process.env.DB_PORT,
       username: 'postgres',
       password: '5940530bbbb',
-      database: 'barber',
-      entities: [UserEntity, AppointmentsEntity, CardEntity],
+      database: 'todolist',
+      entities: [UserEntity, TodolistEntity, TasksEntity],
       synchronize: true,
     }),
     AuthModule,
-    AppointmentsModule,
+    TodolistModule,
   ],
   controllers: [AppController],
   providers: [AppService],
